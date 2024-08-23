@@ -1,0 +1,18 @@
+[package]
+name = "pizza-jieba"
+version = "0.1.0"
+edition = "2021"
+repository = "https://github.com/infinilabs/pizza-jieba"
+categories = ["text-processing"]
+keywords = ["pizza", "jieba", "chinese", "tokenizer", "search"]
+authors = ["INFINI Labs Team",]
+license = "MIT"
+
+
+[workspace]
+
+[dependencies]
+pizza-common = { path = "../../lib/common" }
+pizza-engine = { path = "../../lib/engine" }
+
+jieba-rs = "0.7.0"
