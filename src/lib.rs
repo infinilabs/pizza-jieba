@@ -1,10 +1,9 @@
-
 #![forbid(unsafe_code)]
 
-use std::borrow::Cow;
 use jieba_rs::Jieba;
-use pizza_engine::analysis::{Token, Tokenizer};
-
+use pizza_engine::analysis::Token;
+use pizza_engine::analysis::Tokenizer;
+use std::borrow::Cow;
 
 #[derive(Clone)]
 pub struct JiebaTokenizer {
@@ -24,8 +23,11 @@ impl Tokenizer for JiebaTokenizer {
         let mut indices = text.char_indices().collect::<Vec<_>>();
         indices.push((text.len(), '\0'));
 
-        let orig_tokens = self.jieba.tokenize(text, jieba_rs::TokenizeMode::Search, true);
+        let orig_tokens = self
+            .jieba
+            .tokenize(text, jieba_rs::TokenizeMode::Search, true);
         let mut tokens = Vec::new();
+        let mut position = 0;
 
         for token in orig_tokens {
             let start_offset = indices[token.start].0;
@@ -36,14 +38,14 @@ impl Tokenizer for JiebaTokenizer {
                 term,
                 start_offset: start_offset as u32,
                 end_offset: end_offset as u32,
-                position: token.start as u32,
+                position,
             });
+            position += 1;
         }
 
         tokens
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -57,28 +59,28 @@ mod tests {
         let text = "你今天很帅！";
         let tokens = tokenizer.tokenize(text);
 
-        println!("{:?}",tokens);
-        
+        println!("{:?}", tokens);
+
         assert_eq!(tokens.len(), 4);
 
-        assert_eq!(tokens[0].term, Cow::Borrowed("你")); 
+        assert_eq!(tokens[0].term, Cow::Borrowed("你"));
         assert_eq!(tokens[0].start_offset, 0);
-        assert_eq!(tokens[0].end_offset,  3);
+        assert_eq!(tokens[0].end_offset, 3);
         assert_eq!(tokens[0].position, 0);
 
-        assert_eq!(tokens[1].term, Cow::Borrowed("今天")); 
-        assert_eq!(tokens[1].start_offset,  3);
+        assert_eq!(tokens[1].term, Cow::Borrowed("今天"));
+        assert_eq!(tokens[1].start_offset, 3);
         assert_eq!(tokens[1].end_offset, 9);
         assert_eq!(tokens[1].position, 1);
-        
-        assert_eq!(tokens[2].term, Cow::Borrowed("很帅")); 
-        assert_eq!(tokens[2].start_offset,  9);
+
+        assert_eq!(tokens[2].term, Cow::Borrowed("很帅"));
+        assert_eq!(tokens[2].start_offset, 9);
         assert_eq!(tokens[2].end_offset, 15);
         assert_eq!(tokens[2].position, 2);
-        
-        assert_eq!(tokens[3].term, Cow::Borrowed("！")); 
-        assert_eq!(tokens[3].start_offset,  15);
+
+        assert_eq!(tokens[3].term, Cow::Borrowed("！"));
+        assert_eq!(tokens[3].start_offset, 15);
         assert_eq!(tokens[3].end_offset, 18);
-        assert_eq!(tokens[3].position, 2);
+        assert_eq!(tokens[3].position, 3);
     }
 }
