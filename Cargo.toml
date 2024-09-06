@@ -15,4 +15,4 @@ license = "MIT"
 pizza-common = { path = "../../lib/common" }
 pizza-engine = { path = "../../lib/engine" }
 
-jieba-rs = "0.7.0"
+jieba-rs = { version = "0.7", features = ["tfidf", "textrank","default-dict"],default-features = false }
